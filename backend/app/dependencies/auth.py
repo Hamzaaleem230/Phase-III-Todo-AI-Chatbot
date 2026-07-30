@@ -4,7 +4,8 @@ from jose import JWTError, jwt
 from typing import Optional
 from uuid import UUID
 
-from app.core.config import JWT_SECRET_KEY
+from app.core.config import settings
+JWT_SECRET_KEY = settings.JWT_SECRET_KEY
 
 # Better Auth frontend se token bhejta hai, hum yahan use verify karte hain
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")

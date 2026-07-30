@@ -5,7 +5,8 @@ from typing import Optional
 from app.schemas.user import UserCreate, AuthResponse
 from app.models.user import User
 from app.dependencies.db import get_db
-from app.core.config import JWT_SECRET_KEY
+from app.core.config import settings
+JWT_SECRET_KEY = settings.JWT_SECRET_KEY
 from jose import jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext

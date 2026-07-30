@@ -1,0 +1,17 @@
+# .dockerignore
+.git
+.gitignore
+.env
+.venv
+venv/
+__pycache__/
+*.pyc
+*.log
+Dockerfile
+Dockerfile.*
+.dockerignore
+# Node.js specific (if frontend is built in Docker, but here it's separate)
+node_modules/
+dist/
+build/
+coverage/

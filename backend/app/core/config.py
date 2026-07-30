@@ -1,15 +1,23 @@
-import os
+from pydantic_settings import BaseSettings
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Ye line backend se 3 level upar ja kar root ki .env dhundti hai
-env_path = Path(__file__).resolve().parent.parent.parent.parent / ".env"
+# Sahi Path: config.py se 3 step peeche 'backend' folder tak
+env_path = Path(__file__).resolve().parent.parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-# Spec ke mutabiq Better Auth ka secret use kar rahe hain
-JWT_SECRET_KEY = os.getenv("BETTER_AUTH_SECRET") 
-NEXT_PUBLIC_BACKEND_URL = os.getenv("NEXT_PUBLIC_BACKEND_URL")
+class Settings(BaseSettings):
+    DATABASE_URL: str
+    JWT_SECRET_KEY: str
+    NEXT_PUBLIC_BACKEND_URL: str | None = None
 
-# backend/app/core/config.py mein ye line add karein
-print(f"DEBUG: Backend is using Secret: {os.getenv('BETTER_AUTH_SECRET')}")
+    # Pydantic V2 ke mutabiq model_config use karna behtar hai
+    class Config:
+        env_file = str(env_path)  # Path object ko string mein convert karna safe rehta hai
+        extra = "ignore"
+
+settings = Settings()
+
+# DEBUG (temporary)
+print("DEBUG DATABASE_URL:", settings.DATABASE_URL)
+print("DEBUG JWT_SECRET_KEY:", settings.JWT_SECRET_KEY)

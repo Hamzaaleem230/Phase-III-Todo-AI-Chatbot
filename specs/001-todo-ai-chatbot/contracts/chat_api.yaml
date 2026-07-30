@@ -1,0 +1,97 @@
+openapi: 3.0.0
+info:
+  title: Todo AI Chatbot API
+  version: 1.0.0
+  description: API endpoints for interacting with the AI-powered Todo Chatbot.
+
+paths:
+  /api/v1/chat/send-message:
+    post:
+      summary: Send a message to the AI chatbot
+      operationId: sendChatMessage
+      tags:
+        - Chat
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatMessageRequest'
+      responses:
+        '200':
+          description: Successful response from the chatbot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessageResponse'
+        '400':
+          description: Bad Request - Invalid input or LLM processing error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - User not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error - Unexpected backend/LLM issue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ChatMessageRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: The user's natural language input message.
+          example: "Add a todo to buy groceries tomorrow"
+
+    ChatMessageResponse:
+      type: object
+      required:
+        - response
+      properties:
+        response:
+          type: string
+          description: The AI's natural language response.
+          example: "I've added 'Buy groceries' to your todo list for tomorrow."
+        action_taken:
+          type: string
+          nullable: true
+          description: Optional. Indicates the type of action performed (e.g., TODO_CREATED, TODO_LISTED, NO_ACTION).
+          example: "TODO_CREATED"
+        action_details:
+          type: object
+          nullable: true
+          description: Optional. JSON details of the action, such as todo_id, title, etc.
+          example:
+            todo_id: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+            title: "Buy groceries"
+            status: "pending"
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: A human-readable error message.
+          example: "Invalid input provided."

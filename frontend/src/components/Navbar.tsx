@@ -4,14 +4,35 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { getToken } from '@/lib/auth';
 import UserMenu from './UserMenu';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
-  const token =
-    typeof window !== 'undefined' ? getToken() : null;
 
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // ✅ Reactive auth state
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const updateAuth = () => {
+      setToken(getToken());
+    };
+
+    // Initial check
+    updateAuth();
+
+    // Update when window gets focus
+    window.addEventListener('focus', updateAuth);
+
+    // Update when localStorage changes
+    window.addEventListener('storage', updateAuth);
+
+    return () => {
+      window.removeEventListener('focus', updateAuth);
+      window.removeEventListener('storage', updateAuth);
+    };
+  }, []);
 
   return (
     <nav className="border-b border-white/10 bg-black/60 backdrop-blur-md">
@@ -30,6 +51,13 @@ export default function Navbar() {
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm lg:text-base transition"
             >
               Tasks
+            </Link>
+
+            <Link
+              href="/chat"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm lg:text-base transition"
+            >
+              Chat
             </Link>
 
             {!token ? (
@@ -72,6 +100,14 @@ export default function Navbar() {
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-center"
             >
               Tasks
+            </Link>
+
+            <Link
+              href="/chat"
+              onClick={() => setMenuOpen(false)}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-center"
+            >
+              Chat
             </Link>
 
             {!token ? (

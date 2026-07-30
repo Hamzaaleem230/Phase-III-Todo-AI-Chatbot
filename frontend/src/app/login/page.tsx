@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { setToken } from '@/lib/auth';
+import { API_BASE_URL } from '@/lib/api';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -16,11 +17,11 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setLoading(true);  
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login`,
+        `${API_BASE_URL}/api/login`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

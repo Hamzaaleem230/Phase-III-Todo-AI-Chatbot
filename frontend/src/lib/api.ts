@@ -1,7 +1,7 @@
 // frontend/lib/api.ts
 import { getToken } from './auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
 interface Task {
   id: string;
@@ -152,3 +152,38 @@ export const deleteTask = async (userId: string, taskId: string): Promise<void> 
     throw new Error(errorData.detail || 'Failed to delete task');
   }
 };
+
+// Define types for chat messages
+export interface ChatMessageRequest {
+  message: string;
+}
+
+export interface ChatMessageResponse {
+  response: string;
+  action_taken?: string | null;
+  action_details?: Record<string, any> | null;
+}
+
+export const sendChatMessage = async (chatRequest: ChatMessageRequest): Promise<ChatMessageResponse> => {
+  const token = getToken();
+  if (!token) {
+    throw new Error('No authentication token found.');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/chat/send-message`, { // Note the /v1/chat prefix
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(chatRequest),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.detail || 'Failed to send chat message');
+  }
+
+  return response.json();
+};
+

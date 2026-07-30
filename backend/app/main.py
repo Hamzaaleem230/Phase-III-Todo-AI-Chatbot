@@ -2,21 +2,31 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.auth import auth_router
 from app.api.v1.tasks import tasks_router
+from app.routers import chat
 
-app = FastAPI(title="Todo App API")
+app = FastAPI()
 
-# Hardcoded origins for dev to avoid .env issues
+# ✅ CORS (MANDATORY)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Sab allow kar diya
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(auth_router, prefix="/api")
-app.include_router(tasks_router, prefix="/api")
+# 1. Auth router (/api/signup, /api/login)
+app.include_router(auth_router, prefix="/api", tags=["auth"])
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the Todo App API"}
+# 2. Tasks router (/api/{user_id}/tasks)
+app.include_router(tasks_router, prefix="/api", tags=["tasks"])
+
+# 3. Chat router (/api/v1/chat/send-message)
+app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}

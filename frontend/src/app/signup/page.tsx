@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { setToken } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -20,7 +21,7 @@ export default function SignupPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/signup`,
+        `${API_BASE_URL}/api/signup`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
