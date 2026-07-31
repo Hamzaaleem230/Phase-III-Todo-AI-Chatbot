@@ -1,4 +1,6 @@
 from typing import Optional, Dict, Any
+from uuid import UUID
+from datetime import datetime
 from pydantic import BaseModel, Field
 
 # Request schema for sending a message to the chatbot
@@ -12,5 +14,11 @@ class ChatMessageResponse(BaseModel):
     action_details: Optional[Dict[str, Any]] = Field(None, description="Optional. JSON details of the action, such as todo_id, title, etc.")
 
 # Schema for error responses (as defined in API contract)
-class ErrorResponse(BaseModel):
-    detail: str = Field(..., description="A human-readable error message.")
+class ChatHistoryResponse(BaseModel):
+    id: UUID
+    user_id: UUID
+    message_content: str
+    response_content: str
+    timestamp: datetime
+    intent_classified: Optional[str]
+    extracted_entities: Dict[str, Any]

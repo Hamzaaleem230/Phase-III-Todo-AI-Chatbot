@@ -25,18 +25,18 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
           <Link
-            href="/signup"
+            href="/tasks"
             className="w-full sm:w-auto text-center bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold text-sm sm:text-base transition"
           >
             Get Started Free
           </Link>
 
-          <Link
+          {/* <Link
             href="/login"
             className="w-full sm:w-auto text-center border border-white/20 px-6 py-3 rounded-lg hover:bg-white/5 text-sm sm:text-base transition"
           >
             Sign In
-          </Link>
+          </Link> */}
         </div>
       </section>
 

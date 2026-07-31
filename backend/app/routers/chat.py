@@ -1,15 +1,15 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 from app.dependencies.db import get_session
-# THEEK KIYA: get_current_user_id ko import kiya
 from app.dependencies.auth import get_current_user_id 
-from app.schemas.chat import ChatMessageRequest, ChatMessageResponse, ErrorResponse
+from app.schemas.chat import ChatMessageRequest, ChatMessageResponse, ChatHistoryResponse
 from app.services.ai.base import AbstractLLMService
 from app.services.ai.gemini import GeminiLLMService
 from app.services.chat import process_chat_message, LLMProcessingError, LLMValidationException
+from app.crud.chat import get_chat_history_by_user
 
 router = APIRouter()
 
@@ -17,35 +17,51 @@ router = APIRouter()
 def get_llm_service() -> AbstractLLMService:
     return GeminiLLMService()
 
+@router.get("/chat/history", response_model=List[ChatHistoryResponse])
+async def get_chat_history(
+    current_user_id: UUID = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
+    """
+    Endpoint to retrieve the chat history for the authenticated user.
+    """
+    history = get_chat_history_by_user(session=session, user_id=current_user_id)
+    return history
+
+import traceback
+
 @router.post("/chat/send-message")
 async def send_chat_message(
     chat_request: ChatMessageRequest,
-    # THEEK KIYA: User object ki jagah current_user_id (UUID) accept ki
     current_user_id: UUID = Depends(get_current_user_id),  
     session: Session = Depends(get_session),
     llm_service: AbstractLLMService = Depends(get_llm_service),
 ) -> ChatMessageResponse:
     """
     Endpoint for sending a message to the AI chatbot and receiving a response.
-    The chatbot will process the message, potentially perform todo operations,
-    and return a natural language response.
     """
+    print("\n>>> Entering send_chat_message endpoint")
+    print(f">>> Authenticated user: {current_user_id}")
     try:
+        print(">>> Before process_chat_message()")
         response_data = await process_chat_message(
-            user_id=current_user_id, # THEEK KIYA: Seedha current_user_id pass kar di
+            user_id=current_user_id,
             message_content=chat_request.message,
             session=session,
             llm_service=llm_service
         )
-        return ChatMessageResponse(**response_data)
+        print(">>> After process_chat_message()")
+        print(">>> Before ChatMessageResponse(...)")
+        result = ChatMessageResponse(**response_data)
+        print(">>> Before return")
+        return result
     except (LLMProcessingError, LLMValidationException) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
     except Exception as e:
-        print(f"Unhandled error in send_chat_message: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An internal server error occurred."
-        )
+        print("\n========== FULL TRACEBACK ==========")
+        print(traceback.format_exc())
+        print("====================================")
+        raise

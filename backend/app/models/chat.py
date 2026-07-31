@@ -9,7 +9,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from app.models.user import User # Keep this import for ForeignKey reference
 
 class ChatHistoryBase(SQLModel):
-    user_id: UUID = Field(foreign_key="user.id", index=True)
+    user_id: UUID = Field(foreign_key="users.id", index=True)
     message_content: str = Field(index=False)
     response_content: str = Field(index=False)
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)

@@ -115,7 +115,7 @@ export default function TasksPage() {
               router.push("/tasks/create");
             }
           }}
-          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm sm:text-base"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm sm:text-base cursor-pointer"
         >
           + New Task
         </button>
@@ -169,21 +169,21 @@ export default function TasksPage() {
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => toggleComplete(task.id)}
-                    className="flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm rounded bg-green-600 text-white hover:bg-green-700"
+                    className="cursor-pointer flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm rounded bg-green-600 text-white hover:bg-green-700"
                   >
                     {task.completed ? "Undo" : "Done"}
                   </button>
 
                   <button
                     onClick={() => router.push(`/tasks/${task.id}/edit`)}
-                    className="flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm rounded bg-yellow-500 text-white hover:bg-yellow-600"
+                    className="cursor-pointer flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm rounded bg-yellow-500 text-white hover:bg-yellow-600"
                   >
                     Edit
                   </button>
 
                   <button
                     onClick={() => deleteTask(task.id)}
-                    className="flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm rounded bg-red-500 text-white hover:bg-red-600"
+                    className="cursor-pointer flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm rounded bg-red-500 text-white hover:bg-red-600"
                   >
                     Delete
                   </button>
